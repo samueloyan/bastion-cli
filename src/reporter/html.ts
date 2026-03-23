@@ -27,8 +27,8 @@ export function writeHtmlReport(result: ScanResult, compliance: FrameworkComplia
     .map(
       (f) => `
       <article class="finding sev-${f.severity}">
-        <h3>${esc(f.title)} <span class="badge">${esc(f.severity)}</span></h3>
-        <p class="meta">${esc(f.file)}:${f.line} · ${esc(f.id)}</p>
+        <h3>${esc(f.title)} <span class="badge">${esc(f.severity)}</span>${f.source === 'ai' ? ' <span class="badge ai">AI</span>' : ''}</h3>
+        <p class="meta">${esc(f.file)}:${f.line} · ${esc(f.id)}${f.confidence != null ? ` · Confidence: ${esc(String(f.confidence))}%` : ''}</p>
         <pre class="code"><code>${esc(f.code)}</code></pre>
         <p>${esc(f.description)}</p>
         <p class="fix"><strong>Fix:</strong> ${esc(f.fix)}</p>
@@ -90,6 +90,7 @@ export function writeHtmlReport(result: ScanResult, compliance: FrameworkComplia
     .finding.sev-medium { border-left-color: ${sevColor.medium}; }
     .finding.sev-low { border-left-color: ${sevColor.low}; }
     .badge { display: inline-block; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.06em; padding: 0.2rem 0.5rem; border-radius: 4px; background: #eee; margin-left: 0.5rem; vertical-align: middle; }
+    .badge.ai { background: #e8d5f2; color: #4a148c; }
     pre.code { font-family: 'Space Mono', monospace; font-size: 0.8rem; background: #f4f4f0; padding: 0.75rem 1rem; border-radius: 8px; overflow-x: auto; margin: 0.75rem 0; }
     .fix { color: var(--accent); }
     .fw { font-size: 0.85rem; color: var(--muted); }

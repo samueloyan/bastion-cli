@@ -2,7 +2,9 @@
 import { Command } from 'commander';
 import * as path from 'path';
 import chalk from 'chalk';
-import { runScan } from './scanner';
+import { runScan, sortFindings } from './scanner';
+import { runDeepScanPass } from './scanner/deep-scan';
+import { scoreFromFindings } from './scoring/calculator';
 import { buildFrameworkCompliance } from './frameworks/compliance';
 import { printTerminalReport, printContinuousProtectionBlock } from './reporter/terminal';
 import { buildJsonPayload, printJson } from './reporter/json';
@@ -62,6 +64,7 @@ async function main(): Promise<void> {
     .option('--api-key <key>', 'API key for upload (header x-bastion-key)')
     .option('--org <id>', 'Organization id for upload context')
     .option('--verbose', 'Verbose progress (disables spinner)')
+    .option('--deep', 'AI deep scan at each LLM call site (requires OPENAI_API_KEY)')
     .action(
       async (
         directory: string,
@@ -74,6 +77,7 @@ async function main(): Promise<void> {
           apiKey?: string;
           org?: string;
           verbose?: boolean;
+          deep?: boolean;
         },
       ) => {
         const root = path.resolve(directory);
@@ -82,6 +86,14 @@ async function main(): Promise<void> {
 
         if (opts.upload && (!opts.apiKey || !opts.org)) {
           console.error(chalk.red('▶ --upload requires --api-key and --org'));
+          process.exitCode = 1;
+          return;
+        }
+
+        if (opts.deep && !process.env.OPENAI_API_KEY?.trim()) {
+          console.error(
+            chalk.red('Deep scan requires OPENAI_API_KEY. Run without --deep for pattern-based scanning.'),
+          );
           process.exitCode = 1;
           return;
         }
@@ -99,6 +111,26 @@ async function main(): Promise<void> {
           return;
         }
         stopSpinner(spinner, verbose ? undefined : 'Scan complete');
+
+        if (opts.deep) {
+          const openaiKey = process.env.OPENAI_API_KEY!.trim();
+          const deepSpinner = createSpinner('Running AI deep scan…', verbose);
+          const aiFindings = await runDeepScanPass(root, scan.findings, {
+            apiKey: openaiKey,
+            verbose,
+            onProgress: (n, t) => {
+              if (verbose) console.error(`AI deep scan ${n}/${t}`);
+              if (deepSpinner) deepSpinner.text = `AI deep scan (${n}/${t})…`;
+            },
+          });
+          stopSpinner(deepSpinner, verbose ? undefined : 'AI deep scan complete');
+          const merged = sortFindings([
+            ...scan.findings.map((f) => ({ ...f, source: f.source ?? 'pattern' })),
+            ...aiFindings,
+          ]);
+          const { score, label } = scoreFromFindings(merged);
+          scan = { ...scan, findings: merged, score, scoreLabel: label };
+        }
 
         saveLastScan(scan);
         appendHistory(root, {

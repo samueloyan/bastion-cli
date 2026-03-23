@@ -196,14 +196,25 @@ function phase4Findings(result: ScanResult): string {
     if (group.length === 0) continue;
     lines.push(sevHeader(sev, labels[sev], group.length));
     for (const f of group) {
-      lines.push(`  ${c.info('▶')} ${chalk.white.bold(f.id)} — ${f.title}`);
+      const aiBadge = f.source === 'ai' ? chalk.magenta.bold(' [AI]') : '';
+      lines.push(`  ${c.info('▶')} ${chalk.white.bold(f.id)}${aiBadge} — ${f.title}`);
       lines.push(`     ${c.muted(`${f.file}:${f.line}`)}`);
+      if (f.source === 'ai' && f.confidence != null) {
+        lines.push(`     ${c.muted('Confidence:')} ${chalk.white.bold(`${f.confidence}%`)}`);
+      }
       lines.push(...codeSnippetBox(f.code));
       lines.push(
         `     ${c.muted('OWASP:')} ${c.blue(f.frameworks.owasp.join(', ') || '—')}  ${c.muted('NIST:')} ${c.blue(f.frameworks.nist.join(', ') || '—')}  ${c.muted('MITRE:')} ${c.blue(f.frameworks.mitre.join(', ') || '—')}`,
       );
       lines.push(`     ${c.pass('Fix:')} ${chalk.green(f.fix)}`);
-      lines.push(chalk.gray('     Run: ') + chalk.white.bold(`npx bastion-cli fix ${f.id} --apply`));
+      if (f.source === 'ai') {
+        lines.push(
+          chalk.gray('     ') +
+            chalk.gray('Auto-fix applies to pattern findings only; review AI findings manually.'),
+        );
+      } else {
+        lines.push(chalk.gray('     Run: ') + chalk.white.bold(`npx bastion-cli fix ${f.id} --apply`));
+      }
       lines.push('');
     }
   }

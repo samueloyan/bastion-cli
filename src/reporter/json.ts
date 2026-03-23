@@ -1,8 +1,8 @@
-import type { Finding, JsonExport, ScanResult } from '../types';
+import type { Finding, JsonExport, JsonFinding, ScanResult } from '../types';
 import type { FrameworkComplianceBundle } from '../frameworks/compliance';
 
-function toJsonFinding(f: Finding) {
-  return {
+function toJsonFinding(f: Finding): JsonFinding {
+  const row: JsonFinding = {
     id: f.id,
     title: f.title,
     severity: f.severity,
@@ -13,6 +13,9 @@ function toJsonFinding(f: Finding) {
     fix: f.fix,
     frameworks: f.frameworks,
   };
+  if (f.source !== undefined) row.source = f.source;
+  if (f.confidence !== undefined) row.confidence = f.confidence;
+  return row;
 }
 
 export function buildJsonPayload(result: ScanResult, compliance: FrameworkComplianceBundle): JsonExport {

@@ -6,7 +6,11 @@ export interface OwaspControl {
 }
 
 export const OWASP_CONTROLS: OwaspControl[] = [
-  { id: 'LLM01', name: 'Prompt Injection', scannerIds: ['prompt-injection', 'system-prompts'] },
+  {
+    id: 'LLM01',
+    name: 'Prompt Injection',
+    scannerIds: ['prompt-injection', 'system-prompts', 'ai-deep'],
+  },
   { id: 'LLM02', name: 'Insecure Output Handling', scannerIds: ['output-handling'] },
   { id: 'LLM03', name: 'Training Data Poisoning', scannerIds: [] },
   { id: 'LLM04', name: 'Model Denial of Service', scannerIds: ['rate-limiting'] },

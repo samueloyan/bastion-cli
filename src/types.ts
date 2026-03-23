@@ -20,6 +20,10 @@ export interface Finding {
   frameworks: FrameworkRefs;
   /** Scanner id for grouping / proofs */
   scannerId: string;
+  /** Pattern-based vs GPT deep scan */
+  source?: 'pattern' | 'ai';
+  /** 0–100 when source is AI */
+  confidence?: number;
 }
 
 export interface LogAnalysisSummary {
@@ -97,6 +101,8 @@ export interface JsonFinding {
   description: string;
   fix: string;
   frameworks: FrameworkRefs;
+  source?: 'pattern' | 'ai';
+  confidence?: number;
 }
 
 export interface UploadResponse {

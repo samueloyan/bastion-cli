@@ -3,8 +3,11 @@ import { collectSourceFiles, readFileSafe } from '../utils/file-walker';
 const ALL_SCAN_EXT = ['ts', 'tsx', 'js', 'jsx', 'py', 'env', 'yml', 'yaml', 'json', 'toml', 'vue'];
 const CODE_EXT = ['ts', 'tsx', 'js', 'jsx', 'py'];
 
-const LLM_REGEX =
+/** Exported for deep scan — must use `new RegExp(LLM_CALL_PATTERN.source, 'g')` per file (lastIndex). */
+export const LLM_CALL_PATTERN =
   /\.chat\.completions\.create\s*\(|\.messages\.create\s*\(|\.completions\.create\s*\(|new\s+OpenAI\s*\(|new\s+Anthropic\s*\(|AzureOpenAI\s*\(|ChatOpenAI\s*\(/g;
+
+const LLM_REGEX = new RegExp(LLM_CALL_PATTERN.source, LLM_CALL_PATTERN.flags);
 
 const AGENT_REGEX =
   /createReactAgent|AgentExecutor|agentTools\s*=|bindTools\s*\(|createToolCallingAgent/;

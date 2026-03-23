@@ -76,7 +76,7 @@ function severityOrder(s: Finding['severity']): number {
   }
 }
 
-function sortFindings(findings: Finding[]): Finding[] {
+export function sortFindings(findings: Finding[]): Finding[] {
   return [...findings].sort((a, b) => {
     const sev = severityOrder(a.severity) - severityOrder(b.severity);
     if (sev !== 0) return sev;
