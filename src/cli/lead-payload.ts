@@ -9,6 +9,7 @@ export interface CliLeadFinding {
   file: string;
   line: number;
   description: string;
+  code_fix: string;
 }
 
 export interface CliLeadBody {
@@ -32,6 +33,23 @@ export interface CliLeadBody {
   files_scanned: number;
   directory: string;
   weekly_scan?: boolean;
+}
+
+const SEVERITY_RANK: Record<string, number> = {
+  critical: 0,
+  high: 1,
+  medium: 2,
+  low: 3,
+};
+
+function trimTo500(s: string): string {
+  const t = s.trim();
+  if (t.length <= 500) return t;
+  return `${t.slice(0, 497)}…`;
+}
+
+function compareSeverity(a: JsonFinding, b: JsonFinding): number {
+  return (SEVERITY_RANK[a.severity] ?? 99) - (SEVERITY_RANK[b.severity] ?? 99);
 }
 
 function buildRiskAssessment(findings: JsonFinding[]): string[] {
@@ -89,13 +107,15 @@ export function buildCliLeadBody(
   jsonPayload: JsonExport,
   opts?: { weekly_scan?: boolean },
 ): CliLeadBody {
-  const findings: CliLeadFinding[] = jsonPayload.findings.map((f) => ({
+  const sorted = [...jsonPayload.findings].sort(compareSeverity);
+  const findings: CliLeadFinding[] = sorted.slice(0, 10).map((f) => ({
     id: f.id,
     title: f.title,
     severity: f.severity,
     file: f.file,
     line: f.line,
-    description: f.description,
+    description: trimTo500(f.description),
+    code_fix: trimTo500(f.fix),
   }));
 
   const finding_counts = { critical: 0, high: 0, medium: 0, low: 0, total: jsonPayload.findings.length };
