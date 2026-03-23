@@ -1,14 +1,10 @@
+import type { CliLeadBody } from '../cli/lead-payload';
+
 const BASE = 'https://bastion-zeta.vercel.app';
 
-export async function postLead(payload: {
-  email: string;
-  company_domain?: string;
-  cli_score: number;
-  finding_count: number;
-  findings_summary: Record<string, unknown>;
-  weekly_scan?: boolean;
-}): Promise<{ ok: boolean; error?: string }> {
+export async function postLead(payload: CliLeadBody): Promise<{ ok: boolean; error?: string }> {
   try {
+    console.log('POST /api/cli/lead body:', JSON.stringify(payload, null, 2));
     const r = await fetch(`${BASE}/api/cli/lead`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -43,7 +39,4 @@ export async function postShare(reportData: object): Promise<{ ok: boolean; url?
   }
 }
 
-export function domainFromEmail(email: string): string | undefined {
-  const m = email.trim().toLowerCase().match(/@([^@]+)$/);
-  return m ? m[1] : undefined;
-}
+export { domainFromEmail } from '../utils/email-domain';

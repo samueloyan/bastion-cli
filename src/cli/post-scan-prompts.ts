@@ -2,7 +2,8 @@ import * as readline from 'node:readline/promises';
 import { stdin as input, stdout as output } from 'node:process';
 import chalk from 'chalk';
 import type { JsonExport } from '../types';
-import { postLead, postShare, domainFromEmail } from '../api/platform';
+import { postLead, postShare } from '../api/platform';
+import { buildCliLeadBody } from './lead-payload';
 
 function createRl(): readline.Interface {
   return readline.createInterface({ input, output, terminal: true, historySize: 100 });
@@ -19,16 +20,7 @@ export async function runPostScanPrompts(jsonPayload: JsonExport): Promise<void>
     );
     const email = (await rl.question(chalk.green('> '))).trim();
     if (email) {
-      const res = await postLead({
-        email,
-        company_domain: domainFromEmail(email),
-        cli_score: jsonPayload.score,
-        finding_count: jsonPayload.findings.length,
-        findings_summary: {
-          score_label: jsonPayload.score_label,
-          top: jsonPayload.findings.slice(0, 5).map((f) => ({ id: f.id, title: f.title, severity: f.severity })),
-        },
-      });
+      const res = await postLead(buildCliLeadBody(email, jsonPayload));
       if (res.ok) {
         console.log(chalk.green(`\n✓ Report sent to ${email}`));
         console.log(chalk.gray("We've also created a free Bastion account for you."));
@@ -58,14 +50,7 @@ export async function runPostScanPrompts(jsonPayload: JsonExport): Promise<void>
     console.log(chalk.gray('Enter your email (or press Enter to skip):'));
     const weekly = (await rl.question(chalk.green('> '))).trim();
     if (weekly) {
-      const wr = await postLead({
-        email: weekly,
-        company_domain: domainFromEmail(weekly),
-        cli_score: jsonPayload.score,
-        finding_count: jsonPayload.findings.length,
-        findings_summary: { weekly_reminder: true },
-        weekly_scan: true,
-      });
+      const wr = await postLead(buildCliLeadBody(weekly, jsonPayload, { weekly_scan: true }));
       if (wr.ok) {
         console.log(
           chalk.green(
