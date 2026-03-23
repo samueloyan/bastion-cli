@@ -1,0 +1,20 @@
+2026-03-17 14:23:01 POST /api/chat {"prompt": "Hello, my email is john@example.com"}
+2026-03-17 14:23:02 POST /api/chat {"prompt": "Can you help me? Call me at 555-123-4567"}
+2026-03-17 14:23:03 POST /api/analyze {"prompt": "User SSN: 123-45-6789, analyze spending"}
+2026-03-17 14:23:04 POST /api/chat {"prompt": "What is AI?"}
+2026-03-17 14:23:05 POST /api/chat {"prompt": "My card is 4111-1111-1111-1111 check balance"}
+2026-03-17 14:23:06 POST /api/analyze {"prompt": "Contact sarah@corp.com about account 987-65-4321"}
+2026-03-17 14:23:07 POST /api/chat {"prompt": "Tell me about machine learning"}
+2026-03-17 14:23:08 POST /api/chat {"prompt": "Email me at test@test.com phone 555-987-6543"}
+2026-03-17 14:23:09 POST /api/analyze {"prompt": "SSN 456-78-9012 needs review"}
+2026-03-17 14:23:10 POST /api/chat {"prompt": "Process payment for card 5500-0000-0000-0004"}
+2026-03-17 14:23:11 POST /api/chat {"prompt": "Normal question about weather"}
+2026-03-17 14:23:12 POST /api/analyze {"prompt": "Patient record: SSN 789-01-2345, email doc@hospital.com"}
+2026-03-17 14:23:13 POST /api/chat {"prompt": "How do I cook pasta?"}
+2026-03-17 14:23:14 POST /api/chat {"prompt": "My number is 555-456-7890 call me back"}
+2026-03-17 14:23:15 POST /api/analyze {"prompt": "Employee ID: 321-54-9876, salary review"}
+2026-03-17 14:23:16 POST /api/chat {"prompt": "What is the capital of France?"}
+2026-03-17 14:23:17 POST /api/chat {"prompt": "Send receipt to billing@company.com"}
+2026-03-17 14:23:18 POST /api/analyze {"prompt": "Tax ID: 654-32-1098, filing status"}
+2026-03-17 14:23:19 POST /api/chat {"prompt": "Explain quantum computing"}
+2026-03-17 14:23:20 POST /api/chat {"prompt": "Credit card 4222-2222-2222-2222 dispute"}

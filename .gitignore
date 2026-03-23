@@ -1,0 +1,11 @@
+node_modules/
+dist/
+.env
+.bastion/
+*.log
+!test-project/logs/
+!test-project/logs/**/*.log
+.DS_Store
+bastion-report-*.html
+.next/
+chatbot-ui/
